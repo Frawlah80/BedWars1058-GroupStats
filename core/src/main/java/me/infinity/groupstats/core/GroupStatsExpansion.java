@@ -60,11 +60,11 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
         GroupStatsPlugin.STATISTIC_MAP_TYPE);
 
     if (groupName.equals("overAll")) {
-      GroupNode solo = stats.get("Solo");
-      GroupNode doubles = stats.get("Doubles");
-      GroupNode triples = stats.get("3v3v3v3");
-      GroupNode quadruple = stats.get("4v4v4v4");
-      GroupNode quadruple1 = stats.get("4v4");
+      GroupNode solo = stats.getOrDefault("Solo", new GroupNode());
+      GroupNode doubles = stats.getOrDefault("Doubles", new GroupNode());
+      GroupNode triples = stats.getOrDefault("3v3v3v3", new GroupNode());
+      GroupNode quadruple = stats.getOrDefault("4v4v4v4", new GroupNode());
+      GroupNode quadruple1 = stats.getOrDefault("4v4", new GroupNode());
       if (solo == null) {
         return "0";
       }
@@ -189,10 +189,10 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
     }
 
     if (groupName.equals("core")) {
-      GroupNode solo = stats.get("Solo");
-      GroupNode doubles = stats.get("Doubles");
-      GroupNode triples = stats.get("3v3v3v3");
-      GroupNode quadruple = stats.get("4v4v4v4");
+      GroupNode solo = stats.getOrDefault("Solo", new GroupNode());
+      GroupNode doubles = stats.getOrDefault("Doubles", new GroupNode());
+      GroupNode triples = stats.getOrDefault("3v3v3v3", new GroupNode());
+      GroupNode quadruple = stats.getOrDefault("4v4v4v4", new GroupNode());
       if (solo == null) {
         return "0";
       }
