@@ -93,10 +93,11 @@ public class GroupStatsListener implements Listener {
             .get(event.getArena().getGroup())) : null;
 
     if (event.getCause().isFinalKill()) {
-      victimStats.setWinstreak(0);
+      //victimStats.setWinstreak(0);
       victimStats.setFinalDeaths(victimStats.getFinalDeaths() + 1);
-      victimStats.setLosses(victimStats.getLosses() + 1);
-      victimStats.setGamesPlayed(victimStats.getGamesPlayed() + 1);
+      //victimStats.setLosses(victimStats.getLosses() + 1);
+      //victimStats.setGamesPlayed(victimStats.getGamesPlayed() + 1);
+      // The commented code is in the wrong place
       if (killerStats != null) {
         killerStats.setFinalKills(killerStats.getFinalKills() + 1);
       }
@@ -145,6 +146,21 @@ public class GroupStatsListener implements Listener {
       });
 
     }
+    for (UUID loser : event.getLosers()) {
+      Player player = Bukkit.getPlayer(loser);
+      if (player == null) continue;
+      if (!player.isOnline()) continue;
+
+      GroupProfile groupProfile = instance.getGroupManager().getGroupProfileCache().get(loser);
+      GroupNode groupNode = groupProfile.getGroupStatistics().get(event.getArena().getGroup());
+      groupNode.setLosses(groupNode.getLosses() + 1);
+      groupNode.setWinstreak(0);
+      groupNode.setGamesPlayed(groupNode.getGamesPlayed() + 1);
+
+      instance.getDatabaseManager().getHikariExecutor().execute(() -> {
+        instance.getGroupManager().save(groupProfile);
+      });
+    }
   }
 
   @EventHandler
@@ -175,9 +191,12 @@ public class GroupStatsListener implements Listener {
     GroupNode groupNode = groupProfile.getGroupStatistics().get(event.getArena().getGroup());
     if (event.getArena().getStatus() == GameState.playing) {
       if (event.getArena().isPlayer(player)) {
-        groupNode.setFinalDeaths(groupNode.getFinalDeaths() + 1);
-        groupNode.setLosses(groupNode.getLosses() + 1);
-        groupNode.setWinstreak(0);
+        if (event.getArena().getExTeam(player.getUniqueId()).isBedDestroyed()) {
+          groupNode.setFinalDeaths(groupNode.getFinalDeaths() + 1);
+          //groupNode.setLosses(groupNode.getLosses() + 1);
+          //groupNode.setWinstreak(0);
+        }
+
       }
 
       Player damager = event.getLastDamager();

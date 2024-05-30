@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
@@ -59,44 +60,51 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
         GroupStatsPlugin.STATISTIC_MAP_TYPE);
 
     if (groupName.equals("overAll")) {
+      GroupNode solo = stats.get("Solo");
+      GroupNode doubles = stats.get("Doubles");
+      GroupNode triples = stats.get("3v3v3v3");
+      GroupNode quadruple = stats.get("4v4v4v4");
+      GroupNode quadruple1 = stats.get("4v4");
+
+      int overAllGamesPlayed = solo.getGamesPlayed() + doubles.getGamesPlayed() + triples.getGamesPlayed() + quadruple.getGamesPlayed() + quadruple1.getGamesPlayed();
+      int overAllBedsBroken = solo.getBedsBroken() + doubles.getBedsBroken() + triples.getBedsBroken() + quadruple.getBedsBroken() + quadruple1.getBedsBroken();
+      int overAllBedsLost = solo.getBedsLost() + doubles.getBedsLost() + triples.getBedsLost() + quadruple.getBedsLost() + quadruple1.getBedsLost();
+      int overAllKills = solo.getKills() + doubles.getKills() + triples.getKills() + quadruple.getKills() + quadruple1.getKills();
+      int overAllDeaths = solo.getDeaths() + doubles.getDeaths() + triples.getDeaths() + quadruple.getDeaths() + quadruple1.getDeaths();
+      int overAllFinalKills = solo.getFinalKills() + doubles.getFinalKills() + triples.getFinalKills() + quadruple.getFinalKills() + quadruple1.getFinalKills();
+      int overAllFinalDeaths = solo.getFinalDeaths() + doubles.getFinalDeaths() + triples.getFinalDeaths() + quadruple.getFinalDeaths() + quadruple1.getFinalDeaths();
+      int overAllWins = solo.getWins() + doubles.getWins() + triples.getWins() + quadruple.getWins() + quadruple1.getWins();
+      int overAllLosses = solo.getLosses() + doubles.getLosses() + triples.getLosses() + quadruple.getLosses() + quadruple1.getLosses();
 
       switch (statisticType) {
         case "gamesPlayed":
-          result = String.valueOf(stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getGamesPlayed).sum());
+          result = String.valueOf(overAllGamesPlayed);
           break;
         case "bedsBroken":
-          result = String.valueOf(stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getBedsBroken).sum());
+          result = String.valueOf(overAllBedsBroken);
           break;
         case "bedsLost":
-          result = String.valueOf(
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getBedsLost).sum());
+          result = String.valueOf(overAllBedsLost);
           break;
         case "kills":
-          result = String.valueOf(
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getKills).sum());
+          result = String.valueOf(overAllKills);
           break;
         case "deaths":
-          result = String.valueOf(
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getDeaths).sum());
+          result = String.valueOf(overAllDeaths);
           break;
         case "finalKills":
-          result = String.valueOf(stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getFinalKills).sum());
+          result = String.valueOf(overAllFinalKills);
           break;
         case "finalDeaths":
-          result = String.valueOf(stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getFinalDeaths).sum());
+          result = String.valueOf(overAllFinalDeaths);
           break;
         case "wins":
-          result = String.valueOf(
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getWins).sum());
+          result = String.valueOf(overAllWins);
           break;
         case "losses":
-          result = String.valueOf(
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getLosses).sum());
+          result = String.valueOf(overAllLosses);
           break;
+          // Not the correct way of getting win streak
         case "winstreak":
           result = String.valueOf(stats.isEmpty() ? 0
               : stats.values().stream().mapToInt(GroupNode::getWinstreak).sum());
@@ -105,31 +113,171 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
           result = String.valueOf(stats.isEmpty() ? 0
               : stats.values().stream().mapToInt(GroupNode::getHighestWinstreak).max().getAsInt());
           break;
+          // End of win streak
         case "kdr":
-          int k = stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getKills).sum();
-          int d =
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getDeaths).sum();
-          result = String.valueOf(this.getRatio(k, d));
+          if (overAllKills == 0 && overAllDeaths == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllKills == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllDeaths == 0) {
+            result = String.valueOf(overAllKills);
+          } else {
+            double kdr = ((double) overAllKills) / ((double) overAllDeaths);
+            DecimalFormat kdrDf = new DecimalFormat("#.##");
+            result = String.valueOf(kdrDf.format(kdr));
+          }
           break;
         case "fkdr":
-          int fk = stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getFinalKills).sum();
-          int fd = stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getFinalDeaths).sum();
-          result = String.valueOf(this.getRatio(fk, fd));
+          if (overAllFinalKills == 0 && overAllFinalDeaths == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllFinalKills == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllFinalDeaths == 0) {
+            result = String.valueOf(overAllFinalKills);
+          } else {
+            double fkdr = ((double) overAllFinalKills) / ((double) overAllFinalDeaths);
+            DecimalFormat fkdrDf = new DecimalFormat("#.##");
+            result = String.valueOf(fkdrDf.format(fkdr));
+          }
           break;
         case "bblr":
-          int bb = stats.isEmpty() ? 0
-              : stats.values().stream().mapToInt(GroupNode::getBedsBroken).sum();
-          int bl =
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getBedsLost).sum();
-          result = String.valueOf(this.getRatio(bb, bl));
+          if (overAllBedsBroken == 0 && overAllBedsLost == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllBedsBroken == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllBedsLost == 0) {
+            result = String.valueOf(overAllBedsBroken);
+          } else {
+            double bblr = ((double) overAllBedsBroken) / ((double) overAllBedsLost);
+            DecimalFormat bblrDf = new DecimalFormat("#.##");
+            result = String.valueOf(bblrDf.format(bblr));
+          }
           break;
         case "wlr":
-          int w = stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getWins).sum();
-          int l =
-              stats.isEmpty() ? 0 : stats.values().stream().mapToInt(GroupNode::getLosses).sum();
-          result = String.valueOf(this.getRatio(w, l));
+          if (overAllWins == 0 && overAllLosses == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllWins == 0) {
+            result = String.valueOf(0.00);
+          } else if (overAllLosses == 0) {
+            result = String.valueOf(overAllWins);
+          } else {
+            double wlr = ((double) overAllWins) / ((double) overAllLosses);
+            DecimalFormat wlrDf = new DecimalFormat("#.##");
+            result = String.valueOf(wlrDf.format(wlr));
+          }
+          break;
+        default:
+          result = "0";
+          break;
+      }
+      return result;
+    }
+
+    if (groupName.equals("core")) {
+      GroupNode solo = stats.get("Solo");
+      GroupNode doubles = stats.get("Doubles");
+      GroupNode triples = stats.get("3v3v3v3");
+      GroupNode quadruple = stats.get("4v4v4v4");
+
+      int coreGamesPlayed = solo.getGamesPlayed() + doubles.getGamesPlayed() + triples.getGamesPlayed() + quadruple.getGamesPlayed();
+      int coreBedsBroken = solo.getBedsBroken() + doubles.getBedsBroken() + triples.getBedsBroken() + quadruple.getBedsBroken();
+      int coreBedsLost = solo.getBedsLost() + doubles.getBedsLost() + triples.getBedsLost() + quadruple.getBedsLost();
+      int coreKills = solo.getKills() + doubles.getKills() + triples.getKills() + quadruple.getKills();
+      int coreDeaths = solo.getDeaths() + doubles.getDeaths() + triples.getDeaths() + quadruple.getDeaths();
+      int coreFinalKills = solo.getFinalKills() + doubles.getFinalKills() + triples.getFinalKills() + quadruple.getFinalKills();
+      int coreFinalDeaths = solo.getFinalDeaths() + doubles.getFinalDeaths() + triples.getFinalDeaths() + quadruple.getFinalDeaths();
+      int coreWins = solo.getWins() + doubles.getWins() + triples.getWins() + quadruple.getWins();
+      int coreLosses = solo.getLosses() + doubles.getLosses() + triples.getLosses() + quadruple.getLosses();
+
+      switch (statisticType) {
+        case "gamesPlayed":
+          result = String.valueOf(coreGamesPlayed);
+          break;
+        case "bedsBroken":
+          result = String.valueOf(coreBedsBroken);
+          break;
+        case "bedsLost":
+          result = String.valueOf(coreBedsLost);
+          break;
+        case "kills":
+          result = String.valueOf(coreKills);
+          break;
+        case "deaths":
+          result = String.valueOf(coreDeaths);
+          break;
+        case "finalKills":
+          result = String.valueOf(coreFinalKills);
+          break;
+        case "finalDeaths":
+          result = String.valueOf(coreFinalDeaths);
+          break;
+        case "wins":
+          result = String.valueOf(coreWins);
+          break;
+        case "losses":
+          result = String.valueOf(coreLosses);
+          break;
+        // Not the correct way of getting win streak
+        case "winstreak":
+          result = String.valueOf(stats.isEmpty() ? 0
+                  : stats.values().stream().mapToInt(GroupNode::getWinstreak).sum());
+          break;
+        case "highestWinstreak":
+          result = String.valueOf(stats.isEmpty() ? 0
+                  : stats.values().stream().mapToInt(GroupNode::getHighestWinstreak).max().getAsInt());
+          break;
+        // End of win streak
+        case "kdr":
+          if (coreKills == 0 && coreDeaths == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreKills == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreDeaths == 0) {
+            result = String.valueOf(coreKills);
+          } else {
+            double kdr = ((double) coreKills) / ((double) coreDeaths);
+            DecimalFormat kdrDf = new DecimalFormat("#.##");
+            result = String.valueOf(kdrDf.format(kdr));
+          }
+          break;
+        case "fkdr":
+          if (coreFinalKills == 0 && coreFinalDeaths == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreFinalKills == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreFinalDeaths == 0) {
+            result = String.valueOf(coreFinalKills);
+          } else {
+            double fkdr = ((double) coreFinalKills) / ((double) coreFinalDeaths);
+            DecimalFormat fkdrDf = new DecimalFormat("#.##");
+            result = String.valueOf(fkdrDf.format(fkdr));
+          }
+          break;
+        case "bblr":
+          if (coreBedsBroken == 0 && coreBedsLost == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreBedsBroken == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreBedsLost == 0) {
+            result = String.valueOf(coreBedsBroken);
+          } else {
+            double bblr = ((double) coreBedsBroken) / ((double) coreBedsLost);
+            DecimalFormat bblrDf = new DecimalFormat("#.##");
+            result = String.valueOf(bblrDf.format(bblr));
+          }
+          break;
+        case "wlr":
+          if (coreWins == 0 && coreLosses == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreWins == 0) {
+            result = String.valueOf(0.00);
+          } else if (coreLosses == 0) {
+            result = String.valueOf(coreWins);
+          } else {
+            double wlr = ((double) coreWins) / ((double) coreLosses);
+            DecimalFormat wlrDf = new DecimalFormat("#.##");
+            result = String.valueOf(wlrDf.format(wlr));
+          }
           break;
         default:
           result = "0";
