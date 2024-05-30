@@ -65,6 +65,21 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
       GroupNode triples = stats.get("3v3v3v3");
       GroupNode quadruple = stats.get("4v4v4v4");
       GroupNode quadruple1 = stats.get("4v4");
+      if (solo == null) {
+        return "0";
+      }
+      if (doubles == null) {
+        return "0";
+      }
+      if (triples == null) {
+        return "0";
+      }
+      if (quadruple == null) {
+        return "0";
+      }
+      if (quadruple1 == null) {
+        return "0";
+      }
 
       int overAllGamesPlayed = solo.getGamesPlayed() + doubles.getGamesPlayed() + triples.getGamesPlayed() + quadruple.getGamesPlayed() + quadruple1.getGamesPlayed();
       int overAllBedsBroken = solo.getBedsBroken() + doubles.getBedsBroken() + triples.getBedsBroken() + quadruple.getBedsBroken() + quadruple1.getBedsBroken();
@@ -178,6 +193,18 @@ public class GroupStatsExpansion extends PlaceholderExpansion {
       GroupNode doubles = stats.get("Doubles");
       GroupNode triples = stats.get("3v3v3v3");
       GroupNode quadruple = stats.get("4v4v4v4");
+      if (solo == null) {
+        return "0";
+      }
+      if (doubles == null) {
+        return "0";
+      }
+      if (triples == null) {
+        return "0";
+      }
+      if (quadruple == null) {
+        return "0";
+      }
 
       int coreGamesPlayed = solo.getGamesPlayed() + doubles.getGamesPlayed() + triples.getGamesPlayed() + quadruple.getGamesPlayed();
       int coreBedsBroken = solo.getBedsBroken() + doubles.getBedsBroken() + triples.getBedsBroken() + quadruple.getBedsBroken();
