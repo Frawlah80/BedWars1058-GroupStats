@@ -124,6 +124,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>me.kiiya</groupId>
+      <artifactId>privategames-plugin</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/libs/privategames-plugin-1.1.8.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>2.11.5</version>

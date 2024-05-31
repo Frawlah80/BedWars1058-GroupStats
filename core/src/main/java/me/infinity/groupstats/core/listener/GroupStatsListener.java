@@ -13,6 +13,7 @@ import lombok.SneakyThrows;
 import me.infinity.groupstats.api.GroupNode;
 import me.infinity.groupstats.core.GroupProfile;
 import me.infinity.groupstats.core.GroupStatsPlugin;
+import me.notlewx.privategames.PrivateGames;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,7 @@ public class GroupStatsListener implements Listener {
 
   @EventHandler
   public void onGameStart(GameStateChangeEvent event) {
+    if (PrivateGames.api.getPrivateArenaUtil().isArenaPrivate(event.getArena().getWorldName())) return;
     instance.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> {
       if (!(event.getNewState() == GameState.playing)) {
         return;
@@ -55,6 +57,7 @@ public class GroupStatsListener implements Listener {
   @EventHandler
   @SneakyThrows
   public void onBedBreak(PlayerBedBreakEvent event) {
+    if (PrivateGames.api.getPrivateArenaUtil().isArenaPrivate(event.getArena().getWorldName())) return;
     if (event.getArena().getGroup().equals("Default")) {
       instance.getLogger().warning(
           "The arena '" + event.getArena().getArenaName()
@@ -78,6 +81,7 @@ public class GroupStatsListener implements Listener {
   @EventHandler
   @SneakyThrows
   public void onPlayerKill(PlayerKillEvent event) {
+    if (PrivateGames.api.getPrivateArenaUtil().isArenaPrivate(event.getArena().getWorldName())) return;
     if (event.getArena().getGroup().equals("Default")) {
       instance.getLogger().warning(
           "The arena '" + event.getArena().getArenaName()
@@ -112,6 +116,7 @@ public class GroupStatsListener implements Listener {
   @EventHandler
   @SneakyThrows
   public void onGameEnd(GameEndEvent event) {
+    if (PrivateGames.api.getPrivateArenaUtil().isArenaPrivate(event.getArena().getWorldName())) return;
     if (event.getArena().getGroup().equals("Default")) {
       instance.getLogger().warning(
           "The arena '" + event.getArena().getArenaName()
@@ -166,6 +171,7 @@ public class GroupStatsListener implements Listener {
   @EventHandler
   @SneakyThrows
   public void onArenaLeave(PlayerLeaveArenaEvent event) {
+    if (PrivateGames.api.getPrivateArenaUtil().isArenaPrivate(event.getArena().getWorldName())) return;
     if (event.getArena().getGroup().equals("Default")) {
       instance.getLogger().warning(
           "The arena '" + event.getArena().getArenaName()
